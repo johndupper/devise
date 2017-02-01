@@ -1,5 +1,10 @@
 class PostsController < ApplicationController
-  before_action :set_post, only: [:show, :edit, :update, :destroy]
+
+  # devise
+  # before_action :set_post, only: [:show, :edit, :update, :destroy]
+  # ()conflicts with)
+  # cancancan
+  load_and_authorize_resource  only: [:edit, :update, :destroy]
 
   # GET /posts
   # GET /posts.json
@@ -10,10 +15,13 @@ class PostsController < ApplicationController
   # GET /posts/1
   # GET /posts/1.json
   def show
+    @user = current_user
+    @post = Post.find(params[:id])
   end
 
   # GET /posts/new
   def new
+    @user = current_user
     @post = Post.new
   end
 
@@ -24,7 +32,8 @@ class PostsController < ApplicationController
   # POST /posts
   # POST /posts.json
   def create
-    @post = Post.new(post_params)
+    @user = current_user
+    @post = @user.posts.build(post_params)
 
     respond_to do |format|
       if @post.save
